@@ -203,7 +203,7 @@ Past in the bare-bones configuration below:
   CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 ```
-![Virtual Host](./images/virtualhost.png)
+![Virtual Host](images/Virtualhost.png)
 
 
 __3.__ __Show the new file in sites-available__
