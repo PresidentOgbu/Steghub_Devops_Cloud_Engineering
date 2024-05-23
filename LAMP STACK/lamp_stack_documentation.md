@@ -96,7 +96,7 @@ MySQL was installed in this project. It is a popular relational database managem
 ```
 sudo apt install mysql-server
 ```
-![Install mysql](<images/Install MySql.png>)
+![Install mysql](<images/Install-MySql.png>)
 When prompted, install was confirmed by typing y and then Enter.
 
 __2.__ __Enable and verify that mysql is running with the commands below__
