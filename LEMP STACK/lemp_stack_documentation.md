@@ -9,8 +9,8 @@ __The LEMP stack is a popular open-source web development platform that consists
 
 __1.__ EC2 Instance of t3.micro type and Ubuntu 24.04 LTS (HVM) was launched in the us-north-1 region using the AWS console.
 
-![Launch Instance](./images/create_ec2.png)
-![Launch Instance](./images/ec2_details.png)
+![Launch Instance](.\images\create_ec2.png)
+![Launch Instance](.\images\ec2_details.png)
 
 __2.__ Created SSH key pair named __lemp-key__ to access the instance on port 22
 
@@ -85,22 +85,7 @@ __6.__ __Another way to retrieve the public ip address other than check the aws 
 ```
 curl -s http://169.254.169.254/latest/meta-data/public-ipv4
 ```
-<!-- The above command, gave an error __401 - Unauthorized__.
-![Unauthorized Error-401](./images/curl-401-unauthorized.png)
 
-The error "401 - unauthorized" was troubleshooted by making the following navigations from the ec2 instance page on the AWS console:
-
-- Actions > Instance Settings > Modify instance metadata options.
-
-- Then change the __IMDSv2__ from __Required__ to __Optional__.
-
-![imds option](./images/imds-setting.png)
-
-The command was run again, this time there was no error and the public IP address displayed.
-
-```
-curl -s http://169.254.169.254/latest/meta-data/public-ipv4
-``` -->
 ![Public IP with curl](./images/curl_authorized.png)
 
 
@@ -122,14 +107,6 @@ This connects to the MySQL server as the administrative database user __root__ i
 
 ![MySQL console](./images/mysql_shell.png)
 
-<!-- __3.__ __Set a password for root user using mysql_native_password as default authentication method.__
-
-Here, the user's password was defined as "Admin123$"
-
-```
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Admin123$';
-```
-![Root password](./images/root_password.png) -->
 
 Exit the MySQL shell
 ```
@@ -422,20 +399,6 @@ __2.__ __Now access this page on the browser by using the domain name or public 
 ```
 http://16.170.246.55/todo_list.php
 ```
-<!-- ![Error 502](./images/php-v-error.png)
-
-__When the PHP script queried the database there was an error "502 Bad Gateway" displayed on the browser. This is because the PHP version specified in the Nginx server configuration is php8.1 while the version of the PHP installed is php8.3__
-
-__This was troubleshooted by updating the Nginx server configuration with PHP version php8.3__
-
-![Updated server](./images/php-v-update.png)
-
-Ater updating the Nginx server, the URL was tested again on the browser and there no error.
-```
-http://18.209.18.61/todo_list.php
-```
-
-![Updated site](./images/php-site-ip.png) -->
 
 __Access this page on the browser by using the domain name followed by /todo_list.php__
 
