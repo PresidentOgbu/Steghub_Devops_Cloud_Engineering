@@ -9,9 +9,8 @@ __The LEMP stack is a popular open-source web development platform that consists
 
 __1.__ EC2 Instance of t3.micro type and Ubuntu 24.04 LTS (HVM) was launched in the us-north-1 region using the AWS console.
 
-![Launch Instance]( ./images/create_ec2.png)
+![Launch Instance](./images/create_ec2.png)
 ![Launch Instance](./images/ec2_details.png)
-
 __2.__ Created SSH key pair named __lemp-key__ to access the instance on port 22
 
 __3.__ The security group was configured with the following inbound rules:
