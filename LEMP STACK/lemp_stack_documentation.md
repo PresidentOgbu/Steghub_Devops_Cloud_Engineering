@@ -46,7 +46,6 @@ sudo apt update
 sudo apt upgrade -y
 ```
 ![Update Packages](./images/update_ec2.png)
-![Upgrade Packages](./images/upgrade-ec2.png)
 
 __2.__ __Install nginx__
 
