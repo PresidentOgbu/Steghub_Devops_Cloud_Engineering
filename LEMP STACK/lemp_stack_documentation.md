@@ -9,8 +9,8 @@ __The LEMP stack is a popular open-source web development platform that consists
 
 __1.__ EC2 Instance of t3.micro type and Ubuntu 24.04 LTS (HVM) was launched in the us-north-1 region using the AWS console.
 
-![Launch Instance](.\images\create_ec2.png)
-![Launch Instance](.\images\ec2_details.png)
+![Launch Instance](images/create_ec2.png)
+![Launch Instance](images/ec2_details.png)
 __2.__ Created SSH key pair named __lemp-key__ to access the instance on port 22
 
 __3.__ The security group was configured with the following inbound rules:
@@ -19,11 +19,11 @@ __3.__ The security group was configured with the following inbound rules:
 - Allow traffic on port 443 (HTTPS) with source from anywhere on the internet.
 - Allow traffic on port 22 (SSH) with source from any IP address. This is opened by default.
 
-![Security Rules](./images/security_rules.png)
+![Security Rules](images/security_rules.png)
 
 __4.__ The default VPC and Subnet was used for the networking configuration.
 
-![Default Network](./images/default_network.png)
+![Default Network](images/default_network.png)
 
 __5.__ The private ssh key that got downloaded was located, permission was changed for the private key file and then used to connect to the instance by running
 ```
@@ -34,7 +34,7 @@ ssh -i "lemp-key.pem" ubuntu@16.170.246.55
 ```
 Where __username=ubuntu__ and __public ip address=16.170.246.55__
 
-![Connect to instance](./images/ssh_access.png)
+![Connect to instance](images/ssh_access.png)
 
 
 ## Step 1 - Install nginx web server
@@ -45,7 +45,7 @@ __1.__ __Update and upgrade the server’s package index__
 sudo apt update
 sudo apt upgrade -y
 ```
-![Update Packages](./images/update_ec2.png)
+![Update Packages](images/update_ec2.png)
 
 __2.__ __Install nginx__
 
