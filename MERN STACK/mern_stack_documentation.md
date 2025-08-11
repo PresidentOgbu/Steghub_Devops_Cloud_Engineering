@@ -11,7 +11,7 @@ __Express.js:__ A lightweight web framework for Node.js that simplifies building
 
 __React.js:__ A powerful library for creating interactive user interfaces.
 
-__Node.js:__ A JavaScript runtime environment that allows execution of server-side JavaScript code.__
+__Node.js:__ A JavaScript runtime environment that allows the execution of server-side JavaScript code.__
 
 __This guide provides a comprehensive overview of setting up and utilizing each component of the MERN stack, to develop robust web applications.__
 
