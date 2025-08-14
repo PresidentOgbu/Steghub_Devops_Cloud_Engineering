@@ -489,7 +489,7 @@ node server.js
 ```
 ![server](./images/server-error.png)
 
-The server didn't run initially cos it threw an xxyz. error but it was resolved By updating package.json to use "express": "^4.18.2" which is stable and compatible with Node.js v18.20.8.and fixing permission issues and reinstalling the dependencies using the following codes
+The server didn't run initially cos it threw a TypeError: Missing parameter name in the path-to-regexp module, which is commonly used in Express.js for route parsing, but it was resolved By updating package.json to use "express": "^4.18.2" which is stable and compatible with Node.js v18.20 and also by fixing permission issues and reinstalling the dependencies using the following codes 
 
 ```bash
 sudo chown -R ubuntu:ubuntu .
