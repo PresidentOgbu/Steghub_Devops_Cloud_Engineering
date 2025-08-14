@@ -13,12 +13,11 @@ __Node.js:__ Node.js is a JavaScript runtime built on Chrome's V8 JavaScript eng
 
 ## Step 0: Prerequisites
 
-__1.__ EC2 Instance of t3.small type and Ubuntu 22.04 LTS (HVM) was lunched in the us-east-1 region using the AWS console.
+__1.__ EC2 Instance of t3.micro instance type and Ubuntu 22.04 LTS (HVM) was launched in the us-east-1c region using the AWS console.
 
-![Lunch Instance](./images/create-ec2.png)
-![Lunch Instance](./images/ec2-detail.png)
+![Launch Instance](./images/ec2-detail.png)
 
-__2.__ Attached SSH key named __my-ec2-key__ to access the instance on port 22
+__2.__ Attached SSH key named __my-ec2-pair__ to access the instance on port 22
 
 __3.__ The security group was configured with the following inbound rules:
 
@@ -34,12 +33,12 @@ __3.__ The security group was configured with the following inbound rules:
 
 __4.__ The private ssh key permission was changed for the private key file and then used to connect to the instance by running
 ```bash
-chmod 400 my-ec2-key.pem
+chmod 400 my-ec2-pair.pem
 ```
 ```bash
-ssh -i "my-ec2-key.pem" ubuntu@54.81.119.2
+ssh -i "my-ec2-pair.pem" ubuntu@54.210.238.34
 ```
-Where __username=ubuntu__ and __public ip address=54.81.119.2__
+Where __username=ubuntu__ and __public ip address=54.210.238.34__
 
 ![Connect to instance](./images/ssh.png)
 
@@ -118,7 +117,11 @@ sudo systemctl enable mongod
 ```bash
 sudo systemctl status mongod
 ```
-![Start Mongodb](./images/start-n-enable-db.png)
+  ![Start Mongodb](./images/start-n-enable-db.png)
+
+
+  ![Start Mongodb](./images/status-db.png)
+
 
 __5.__ __Install body-parser package__
 
@@ -287,12 +290,13 @@ __3.__ __In the ‘apps’ folder, create a folder named models__
 ```bash
 mkdir models && cd models
 ```
+![](./images/cd-route-model.png)
+
 __In models, create a file named book.js__
 
 ```bash
 vim book.js
 ```
-![](./images/cd-route-model.png)
 
 Copy and paste the code below into book.js
 
@@ -483,7 +487,41 @@ cd ..
 ```bash
 node server.js
 ```
-![Run server](./images/run-server.png)
+![server](./images/server-error.png)
+
+The server didn't run initially cos it threw an xxyz. error but it was resolved By updating package.json to use "express": "^4.18.2" which is stable and compatible with Node.js v18.20.8.and fixing permission issues and reinstalling the dependencies using the following codes
+
+```bash
+sudo chown -R ubuntu:ubuntu .
+```
+
+```bash
+sudo chmod -R u+w .
+```
+
+```bash
+rm -rf node_modules package-lock.json
+```
+
+```bash
+npm install
+``` 
+
+![Package Update](./images/packagejson-update.png)
+
+![Dependencies Update](./images/dependencies-update.png)
+
+
+
+when the server is run again
+
+```bash
+node server.js
+```
+
+![Run server](./images/running-server.png)
+
+
 
 The server is now up and running, Connection to it is via port 3300. A separate Putty or SSH console to test what curl command returns locally can be launched.
 
