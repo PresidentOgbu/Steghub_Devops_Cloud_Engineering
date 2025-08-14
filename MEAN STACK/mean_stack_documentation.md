@@ -513,7 +513,7 @@ npm install
 
 
 
-when the server is run again
+when the server is started again
 
 ```bash
 node server.js
