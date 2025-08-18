@@ -12,10 +12,10 @@ __1.__ Two EC2 Instances of t2.micro type and Ubuntu 24.04 LTS (HVM) was lunched
 ![Launch Instance](./images/create-ec2.png)
 
 __mysql server__
-![Launch Instance](./images/ec2-server-detail.png)
+![Launch Instance](./images/ec2-server-details.png)
 
 __mysql client__
-![Launch Instance](./images/ec2-client-detail.png)
+![Launch Instance](./images/ec2-client-details.png)
 
 The security group inbound rule for both instances was configured with the default SSH on port 22 with source from anywhere.
 
@@ -30,12 +30,12 @@ __2.__ Attached SSH key named __my-ec2-key__ to access the instance on port 22
 __1.__ The private ssh key permission was changed for the private key file and then used to connect to the instance by running
 
 ```bash
-chmod 400 my-ec2-key.pem
+chmod 400 my_ec2_keypair.pem
 ```
 ```bash
-ssh -i "my-ec2-key.pem" ubuntu@3.87.82.40
+ssh -i "my_ec2_keypair.pem" ubuntu@54.196.68.184
 ```
-Where __username=ubuntu__ and __public ip address=3.87.82.40__
+Where __username=ubuntu__ and __public ip address=54.196.68.184__
 
 ![Connect to instance](./images/ssh-server.png)
 
@@ -66,9 +66,9 @@ sudo systemctl enable mysql
 __1.__ __Connect to the instance__
 
 ```bash
-ssh -i "my-ec2-key.pem" ubuntu@54.242.30.171
+ssh -i "my-ec2-key.pem" ubuntu@34.204.92.73
 ```
-Where __username=ubuntu__ and __public ip address=54.242.30.171__
+Where __username=ubuntu__ and __public ip address=34.204.92.73__
 
 ![Connect to instance](./images/ssh-client.png)
 
