@@ -143,7 +143,7 @@ Replace ```127.0.0.1``` with ```0.0.0.0```
 ## Step 6 - From ```mysql client``` Linxus Sever, connect remotely to ```mysql server``` Database Engine without using SSH. The mysql utility must be used to perform this action.
 
 ```bash
-sudo mysql -u client -h 172.31.18.141 -p
+sudo mysql -u client -h 172.31.36.95 -p
 ```
 ![Client to DB](./images/access-db-server-from-client.png)
 
