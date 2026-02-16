@@ -2,16 +2,16 @@
 
 ## Step 1 - Prepare a Web Server
 
-__1.__ __Launch a RedHat EC2 instance that serve as ```Web Server```. Create 3 volumes in the same AZ as the web server ec2 each of 10GB and attache all 3 volumes one by one to the web server__.
+__1.__ __Launch a RedHat EC2 instance that serve as ```Web Server```. Create 3 volumes in the same availabilty zone as the web server Ec2 each of 10GB and attach all 3 volumes one by one to the web server__.
 
-![Instance detail](./images/ec2-detail.png)
-![Instance detail](./images/security-rule.png)
+![Instance detail](./images/ec2-details.png)
+![Instance detail](./images/security-rules.png)
 ![Web volumes](./images/web-volumes.png)
 
 __2.__ __Open up the Linux terminal to begin configuration__.
 
 ```bash
-ssh -i "ec2key.pem" ec2-user@54.174.233.24
+ssh -i "webserver_key_pair.pem" ec2-user@16.171.250.17
 ```
 ![web ssh](./images/ssh-web.png)
 
@@ -29,22 +29,22 @@ df -h
 ```
 ![](./images/mount-free-space.png)
 
-__5a.__ __Use ```gdisk``` utility to create a single partition on each of the 3 disks__.
+__5a.__ __Use ```fdisk``` utility to create a single partition on each of the 3 disks__.
 
 ```bash
-sudo gdisk /dev/xvdf
+sudo fdisk /dev/nvme1n1
 ```
-![partition](./images/f-part.png)
+![partition](./images/nvme1.png)
 
 ```bash
-sudo gdisk /dev/xvdg
+sudo fdisk /dev/nvme2n1
 ```
-![partition](./images/g-part.png)
+![partition](./images/nvme2.png)
 
 ```bash
-sudo gdisk /dev/xvdh
+sudo fdisk /dev/nvme3n1
 ```
-![partition](./images/h-part.png)
+![partition](./images/nvme3.png)
 
 __5b.__ __Use ```lsblk``` utility to view the newly configured partitions on each of the 3 disks__
 ```bash
@@ -60,15 +60,15 @@ sudo yum install lvm2 -y
 
 __7.__ __Use ```pvcreate``` utility to mark each of the 3 dicks as physical volumes (PVs) to be used by LVM. Verify that each of the volumes have been created successfully__.
 ```bash
-sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
+sudo pvcreate /dev/nvme1n1p1 /dev/nvme2n1p1 /dev/nvme3n1p1
 
 sudo pvs
 ```
-![PVs](./images/pv-create.png)
+![PV](./images/pv-create.png)
 
-__8.__ __Use ```vgcreate``` utility to add all 3 PVs to a volume group (VG). Name the VG ```webdata-vg```. Verify that the VG has been created successfully__
+__8.__ __Use ```vgcreate``` utility to add all 3 PVs to a volume group (VG). Name the VG ```data-vg```. Verify that the VG has been created successfully__
 ```bash
-sudo vgcreate webdata-vg /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
+sudo vgcreate data_vg /dev/nvme1n1p1 /dev/nvme2n1p1 /dev/nvme3n1p1
 
 sudo vgs
 ```
@@ -78,9 +78,9 @@ __9.__ __Use ```lvcreate``` utility to create 2 logical volume, ```apps-lv``` (_
 
 __Note__: apps-lv is used to store data for the Website while logs-lv is used to store data for logs.
 ```bash
-sudo lvcreate -n apps-lv -L 14G webdata-vg
+sudo lvcreate -n apps-lv -L 14G data_vg
 
-sudo lvcreate -n logs-lv -L 14G webdata-vg
+sudo lvcreate -n logs-lv -L 14G data_vg
 
 sudo lvs
 ```
@@ -100,9 +100,9 @@ lsblk
 __10b.__ __Use ```mkfs.ext4``` to format the logical volumes with ext4 filesystem__
 
 ```bash
-sudo mkfs.ext4 /dev/webdata-vg/apps-lv
+sudo mkfs.ext4 /dev/data_vg/apps-lv
 
-sudo mkfs.ext4 /dev/webdata-vg/logs-lv
+sudo mkfs.ext4 /dev/data_vg/logs-lv
 ```
 ![filesystem](./images/mkfs.png)
 
@@ -114,9 +114,9 @@ sudo mkdir -p /home/recovery/logs
 ```
 #### Mount /var/www/html on apps-lv logical volume
 ```bash
-sudo mount /dev/webdata-vg/apps-lv /var/www/html
+sudo mount /dev/data-vg/apps-lv /var/www/html
 ```
-![Mount apps-lv](./images/mount-applv.png)
+![Mount apps-lv](./images/mount-apply.png)
 
 __12.__ __Use ```rsync``` utility to backup all the files in the log directory ```/var/log``` into ```/home/recovery/logs``` (This is required before mounting the file system)__
 
@@ -128,7 +128,7 @@ sudo rsync -av /var/log /home/recovery/logs
 __13.__ __Mount ```/var/log``` on ```logs-lv``` logical volume (All existing data on /var/log is deleted with this mount process which was why the data was backed up)__
 
 ```bash
-sudo mount /dev/webdata-vg/logs-lv /var/log
+sudo mount /dev/data-vg/logs-lv /var/log
 ```
 ![Mount logs-lv](./images/mount-logslv.png)
 
@@ -159,114 +159,6 @@ df -h   # Verifies the setup
 ![Verify setup](./images/verify-setup.png)
 
 
-## Step 2 - Prepare the Database Server
-
-### Launch a second RedHat EC2 instance that will have a role - ```DB Server```. Repeat the same steps as for the Web Server, but instead of ```apps-lv```, create ```dv-lv``` and mount it to ```/db``` directory.
-
-__1.__ __Create 3 volumes in the same AZ as the ```DB Server``` ec2 each of 10GB and attache all 3 volumes one by one to the DB Server__.
-
-![Instance detail](./images/ec2-detail-db.png)
-![Instance detail](./images/security-rule-db.png)
-![DB volumes](./images/db-volume.png)
-
-__2.__ __Open up the Linux terminal to begin configuration__.
-
-```bash
-ssh -i "ec2key.pem" ec2-user@18.209.18.145
-```
-![DB ssh](./images/ssh-db.png)
-
-__3.__ __Use ```lsblk``` to inspect what block devices are attached to the server. Their name will likely be ```xvdf```, ```xvdg``` and ```xvdh```__.
-
-```bash
-lsblk
-```
-![List Block](./images/lsblk-db.png)
-
-__4a.__ __Use ```gdisk``` utility to create a single partition on each of the 3 disks__.
-
-```bash
-sudo gdisk /dev/xvdf
-```
-![partition](./images/f-part-db.png)
-
-```bash
-sudo gdisk /dev/xvdg
-```
-![partition](./images/g-part-db.png)
-
-```bash
-sudo gdisk /dev/xvdh
-```
-![partition](./images/h-part-db.png)
-
-__4b.__ __Use ```lsblk``` utility to view the newly configured partitions on each of the 3 disks
-```bash
-lsblk
-```
-![View partitions](./images/lsblk2-db.png)
-
-__5.__ __Install ```lvm``` package__
-```bash
-sudo yum install lvm2 -y
-```
-![Install lvm](./images/install-lvm-db.png)
-
-__6.__ __Use ```pvcreate``` utility to mark each of the 3 dicks as physical volumes (PVs) to be used by LVM. Also, use ```vgcreate``` utility to add all 3 PVs to a volume group (VG). Name the VG ```database-vg```. Verify that each of the volumes and the VG have been created successfully__.
-```bash
-sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
-sudo pvs
-```
-```bash
-sudo vgcreate database-vg /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
-sudo vgs
-```
-![PVs and VG](./images/pv-vg-db.png)
-
-__7.__ __Use ```lvcreate``` utility to create a logical volume, ```db-lv``` (__Use 20G of the PV size since it is the only LV to be created__). Verify that the logical volumes have been created successfully__.
-
-```bash
-sudo lvcreate -n db-lv -L 20G database-vg
-
-sudo lvs
-```
-![LV](./images/lv-create-db.png)
-
-__8.__ __Use ```mkfs.ext4``` to format the logical volumes with ext4 filesystem and monut ```/db``` on ```db-lv```__
-
-```bash
-sudo mkfs.ext4 /dev/database-vg/db-lv
-```
-```bash
-sudo mount /dev/database-vg/db-lv /db
-```
-![filesystem](./images/mkfs-db-lv.png)
-
-__9.__ __Update ```/etc/fstab``` file so that the mount configuration will persist after restart of the server__
-
-#### Get the ```UUID``` of the device
-
-```bash
-sudo blkid
-```
-![UUID](./images/blkid-db.png)
-
-#### Update the ```/etc/fstab``` file with the format shown inside the file using the ```UUID```. Remember to remove the leading and ending quotes.
-```bash
-sudo vi /etc/fstab
-```
-![Update fstab](./images/update-fstab-db.png)
-
-__10.__ __Test the configuration and reload daemon. Verify the setup__
-```bash
-sudo mount -a   # Test the configuration
-
-sudo systemctl daemon-reload
-
-df -h   # Verifies the setup
-```
-![Verify setup](./images/vi-fstab.png)
-
 
 ## Step 3 - Install WordPress on the Web Server EC2
 
@@ -296,7 +188,7 @@ sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noa
 ```
 ![Install Epel repo](./images/install-epel-repo.png)
 
-#### Install yum utils and enable remi-repository
+<!-- #### Install yum utils and enable remi-repository
 
 ```bash
 sudo dnf install dnf-utils http://rpms.remirepo.net/enterprise/remi-release-9.rpm
@@ -321,7 +213,7 @@ sudo dnf module reset php
 
 ```bash
 sudo dnf module enable php:remi-8.2
-```
+``` -->
 
 #### Install PHP, PHP-FPM (FastCGI Process Manager) and associated PHP modules using the command.
 
@@ -390,7 +282,7 @@ This will copy and create the file wp-config.php
 cd wordpress/
 sudo cp -R wp-config-sample.php wp-config.php
 ```
-![wp-config](./images/create-wp-config.png)
+![wp-config](./images/cp-wp-config.png)
 
 #### Exit from the extracted ```wordpress```. Copy the content of the extracted ```wordpress``` to ```/var/www/html```.
 
@@ -400,7 +292,7 @@ sudo cp -R wordpress/. /var/www/html/
 ```
 ![Cp /html](./images/cp-wp-html.png)
 
-__6.__ __Install MySQL on DB Server EC2__
+__6.__ __Install MariaDB on EC2 Server__
 
 #### Update the EC2
 ```bash
@@ -408,20 +300,19 @@ sudo yum update -y
 ```
 ![Update RHEL](./images/update-rhel-db.png)
 
-#### Install MySQL Server
+#### Install MariaDB Server
 ```bash
-sudo yum install mysql-server -y
+sudo dnf --disablerepo='epel*' install -y mariadb-server
 ```
-![install mysqlserver](./images/install-mysql-server-db.png)
+![install MariaDB](./images/install-MariaDB.png)
 
 #### Verify that the service is up and running. If it is not running, restart the service and enable it so it will be running even after reboot.
 
 ```bash
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-sudo systemctl status mysqld
+sudo systemctl enable --now mariadb
+sudo systemctl status mariadb --no-pager
 ```
-![Start mysqld](./images/start-mysqld-db.png)
+![Start MariaDB](./images/start-MariaDB.png)
 
 
 __7.__ __Configure DB to work with WordPress__
@@ -431,98 +322,46 @@ __7.__ __Configure DB to work with WordPress__
 ```bash
 sudo mysql_secure_installation
 ```
-![Secure mysql](./images/secure-mysql-db.png)
+![Secure MySQL](./images/secure-MySQL.png)
+![Sudo MariaDB](./images/sudo-MariaDB.png)
 
 #### Create database
 
 The user "wordpress" will be connecting to the database using the Web Server __private IP address__
 
-```bash
-sudo mysql -u root -p
 
-CREATE DATABASE wordpress_db;
-CREATE USER 'wordpress'@'172.31.31.27' IDENTIFIED WITH mysql_native_password BY 'Admin123$';
-GRANT ALL PRIVILEGES ON wordpress_db.* TO 'wordpress'@'172.31.31.27' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-show databases;
-exit
+```bash
+mysql -h 172.31.40.241 -u wpuser -p
 ```
 ![Create db](./images/create-db.png)
 
-#### Set the bind address
+#### Open Wp-config.php file and edit
 
-The bind address is set to the ```private IP address of the DB Server``` for more security instead of to any IP address (0.0.0.0)
 
 ```bash
-sudo vi /etc/my.cnf
-sudo systemctl restart mysqld
+sudo vi /var/www/html/wp-config.php
 ```
-![bind address](./images/bind-address.png)
 
-
-__8.__ __Configure WordPress to connect to remote database__
-
-#### Open MySQL port 3306 on the DB Server EC2.
-For extra security, access to the DB Server is allowed only from the Web Server IP address. In the inbound rule, /32 is configured as source.
-
-![mysql port](./images/open-mysql-port.png)
-
-#### Install mysql server on the Web Server EC2.
-
-WordPress has its own database, therefore it needs a database server to store it's information such as: Username, Email, Passwords, First name and Last name of the users on the wordpress website on a database.
-
+Replace with this
 ```bash
-sudo yum install mysql-server
+define('DB_NAME', 'wordpress');
+define('DB_USER', 'wpuser');
+define('DB_PASSWORD', 'StrongPassword123!');
+define('DB_HOST', '172.31.40.241');
+
 ```
-![Install mysqlserver](./images/install-mysql-server.png)
 
-```bash
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-sudo systemctl status mysqld
-```
-![Start mysqld](./images/start-mysqld.png)
-
-#### Open ```wp-config.php``` file and edit the database information
-
-```bash
-cd /var/www/html
-sudo vi wp-config.php
-sudo systemctl restart httpd
-```
-![Open cofig](./images/open-wp-config.png)
-
-The ```private IP address``` of the DB Server is set as the ```DB_HOST``` because the DB Server and the Web Server resides in the same ```subnet``` which makes it possible for them to communicate directly. The private IP address is not an internet routable address.
-
-![Edit config](./images/update-wp-config.png)
+![Edit wp config](./images/wp-config.png)
 
 
-#### Disable the Apache default page
-
-Here the default page can be renamed.
-
-```bash
-sudo mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf_backup
-```
-![Disable apache default](./images/rename-default-apache.png)
-
-#### Connect to the DB Server from the Web Server
-
-```bash
-sudo mysql -h 172.31.30.142 -u wordpress -p
-
-show databases;
-exit;
-```
-![Web to DB](./images/web-to-db.png)
 
 
 #### Access the web page again with the Web Server public IP address and install wordpress on the browser
 
 ![wp installed](./images/wp-installed.png)
 ![wp login](./images/login-to-wp.png)
+![wp success](./images/wp-success.png)
 ![wp website](./images/wp-website.png)
 
 
 ## At this point, the implementation of this project is complete and WordPress is available to be used.
-
