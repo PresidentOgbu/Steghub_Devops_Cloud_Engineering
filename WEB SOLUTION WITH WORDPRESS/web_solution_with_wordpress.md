@@ -295,8 +295,8 @@ __7.__ __Configure DB to work with WordPress__
 ```bash
 sudo mysql_secure_installation
 ```
-![Secure MySQL](images/secure-MySQL.png)
-![Sudo MariaDB](images/sudo-MariaDB.png)
+![Secure MySQL](./images/secure-MySQL.png)
+![Sudo MariaDB](./images/sudo-MariaDB.png)
 
 #### Create database
 
