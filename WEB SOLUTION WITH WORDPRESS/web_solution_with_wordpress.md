@@ -188,32 +188,6 @@ sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noa
 ```
 ![Install Epel repo](./images/install-epel-repo.png)
 
-<!-- #### Install yum utils and enable remi-repository
-
-```bash
-sudo dnf install dnf-utils http://rpms.remirepo.net/enterprise/remi-release-9.rpm
-```
-![Install yum utils](./images/install-utils-remi.png)
-
-#### After the successful installation of yum-utils and Remi-packages, search for the PHP modules which are available for download by running the command.
-
-```bash
-sudo dnf module list php
-```
-![List PHP versions](./images/list-php-version.png)
-
-#### The output above indicates that if the currently installed version of PHP is PHP 8.1, there is need to install the newer release, PHP 8.2. Reset the PHP modules.
-
-```bash
-sudo dnf module reset php
-```
-![Reset PHP](./images/reset-php.png)
-
-#### Having run reset, enable the PHP 8.2 module by running
-
-```bash
-sudo dnf module enable php:remi-8.2
-``` -->
 
 #### Install PHP, PHP-FPM (FastCGI Process Manager) and associated PHP modules using the command.
 
