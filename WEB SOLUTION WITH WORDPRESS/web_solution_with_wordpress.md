@@ -288,7 +288,6 @@ sudo systemctl status mariadb --no-pager
 ```
 ![Start MariaDB](./images/start-MariaDB.png)
 
-
 __7.__ __Configure DB to work with WordPress__
 
 #### Run mysql secure script
@@ -296,8 +295,8 @@ __7.__ __Configure DB to work with WordPress__
 ```bash
 sudo mysql_secure_installation
 ```
-![Secure MySQL](./images/secure-MySQL.png)
-![Sudo MariaDB](./images/sudo-MariaDB.png)
+![Secure MySQL](images/secure-MySQL.png)
+![Sudo MariaDB](images/sudo-MariaDB.png)
 
 #### Create database
 
